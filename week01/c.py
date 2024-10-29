@@ -13,7 +13,7 @@ def detect_letter(grid):
     if bottom == -1 and right == -1:
         return "X"
 
-    # 1. Проверка на "I" — сплошной прямоугольник без внутренних пустых областей
+    # 1 Проверка на "I" — сплошной прямоугольник без внутренних пустых областей
     is_i = True
     for i in range(top, bottom + 1):
         for j in range(left, right + 1):
@@ -25,7 +25,7 @@ def detect_letter(grid):
     if is_i:
         return "I"
 
-    # 2. Определим границы внутреннего прямоугольника
+    # 2 Определим границы внутреннего прямоугольника
     inner_top, inner_bottom, inner_left, inner_right = n, -1, n, -1
     has_inner_rectangle = False
     for i in range(top, bottom + 1):
@@ -37,7 +37,7 @@ def detect_letter(grid):
                 inner_left = min(inner_left, j)
                 inner_right = max(inner_right, j)
 
-    # 3. Проверка на "O" — внутренний прямоугольник окружён со всех сторон
+    # 3 Проверка на "O" — внутренний прямоугольник окружён со всех сторон
     is_O = (
         has_inner_rectangle
         and top < inner_top <= inner_bottom < bottom
@@ -55,7 +55,7 @@ def detect_letter(grid):
         if is_O:
             return "O"
 
-    # 4. Проверка на "C" — внутренний прямоугольник справа прилегает к внешнему
+    # 4 Проверка на "C"
     if (
         has_inner_rectangle
         and top < inner_top <= inner_bottom < bottom
@@ -64,21 +64,30 @@ def detect_letter(grid):
     ):
         return "C"
 
-    # 5. Проверка на "L" — правая сторона не заполнена, но нижняя строка заполнена "#"
+    # 5 Проверка на "L"
     is_L = (
-        all(grid[bottom][j] == "#" for j in range(left, right + 1))  # нижняя строка
-        and all(grid[i][left] == "#" for i in range(top, bottom + 1))  # левая сторона
+        all(
+            grid[bottom][j] == "#" for j in range(left, right + 1)
+        )  # нижняя строка
+        and all(
+            grid[i][left] == "#" for i in range(top, bottom + 1)
+        )  # левая сторона
         and top == inner_top  # проверка на верхнюю часть
         and inner_right == right
         and all(
-            grid[inner_bottom][j] != "#" for j in range(inner_left, inner_right + 1)
+            grid[inner_bottom][j] != "#"
+            for j in range(inner_left, inner_right + 1)
         )  # целостность нижней части внутреннего прямоугольника
-        and all(grid[inner_top][j] != "#" for j in range(inner_left, inner_right + 1))
+        and all(
+            grid[inner_top][j] != "#"
+            for j in range(inner_left, inner_right + 1)
+        )
     )
     if is_L:
         return "L"
 
-    # 6. Проверка на "H" — два внутренних прямоугольника с одинаковой шириной, один сверху, другой снизу
+    # 6 Проверка на "H" — два внутренних прямоугольника с одинаковой шириной
+    # один сверху, другой снизу
     if (
         has_inner_rectangle
         and inner_left <= inner_right
@@ -90,7 +99,7 @@ def detect_letter(grid):
     ):
         return "H"
 
-    # 7. Проверка на "P" — внутренний прямоугольник внизу и второй выше него
+    # 7 Проверка на "P" — внутренний прямоугольник внизу и второй выше него
     is_P = True
     for i in range(inner_top, inner_bottom + 1):
         if len(set(grid[i][inner_left:inner_right])) != 1:
@@ -224,18 +233,36 @@ assert (
     == "O"
 )
 
-assert detect_letter([list(".##."), list(".##."), list(".##."), list("....")]) == "I"
+assert (
+    detect_letter([list(".##."), list(".##."), list(".##."), list("....")])
+    == "I"
+)
 assert (
     detect_letter(
-        [list("#...#"), list(".#.#."), list("..#.."), list(".#.#."), list("#...#")]
+        [
+            list("#...#"),
+            list(".#.#."),
+            list("..#.."),
+            list(".#.#."),
+            list("#...#"),
+        ]
     )
     == "X"
 )
 # Буква I
-assert detect_letter([list(".##."), list(".##."), list(".##."), list("....")]) == "I"
+assert (
+    detect_letter([list(".##."), list(".##."), list(".##."), list("....")])
+    == "I"
+)
 assert (
     detect_letter(
-        [list("....."), list("..##."), list("..##."), list("..##."), list(".....")]
+        [
+            list("....."),
+            list("..##."),
+            list("..##."),
+            list("..##."),
+            list("....."),
+        ]
     )
     == "I"
 )
@@ -243,7 +270,13 @@ assert (
 # Буква O
 assert (
     detect_letter(
-        [list("#####"), list("#...#"), list("#...#"), list("#...#"), list("#####")]
+        [
+            list("#####"),
+            list("#...#"),
+            list("#...#"),
+            list("#...#"),
+            list("#####"),
+        ]
     )
     == "O"
 )
@@ -264,15 +297,30 @@ assert (
 # Буква C
 assert (
     detect_letter(
-        [list("#####"), list("#...."), list("#...."), list("#...."), list("#####")]
+        [
+            list("#####"),
+            list("#...."),
+            list("#...."),
+            list("#...."),
+            list("#####"),
+        ]
     )
     == "C"
 )
-assert detect_letter([list("####"), list("#..."), list("#..."), list("####")]) == "C"
+assert (
+    detect_letter([list("####"), list("#..."), list("#..."), list("####")])
+    == "C"
+)
 
 assert (
     detect_letter(
-        [list("#...."), list("#...."), list("#...."), list("#...."), list("#####")]
+        [
+            list("#...."),
+            list("#...."),
+            list("#...."),
+            list("#...."),
+            list("#####"),
+        ]
     )
     == "L"
 )
@@ -280,13 +328,25 @@ assert (
 # Буква H
 assert (
     detect_letter(
-        [list("#...#"), list("#...#"), list("#####"), list("#...#"), list("#...#")]
+        [
+            list("#...#"),
+            list("#...#"),
+            list("#####"),
+            list("#...#"),
+            list("#...#"),
+        ]
     )
     == "H"
 )
 assert (
     detect_letter(
-        [list("##..##"), list("##..##"), list("######"), list("##..##"), list("##..##")]
+        [
+            list("##..##"),
+            list("##..##"),
+            list("######"),
+            list("##..##"),
+            list("##..##"),
+        ]
     )
     == "H"
 )
@@ -294,7 +354,13 @@ assert (
 # Буква P
 assert (
     detect_letter(
-        [list("#####"), list("#...#"), list("#####"), list("#...."), list("#....")]
+        [
+            list("#####"),
+            list("#...#"),
+            list("#####"),
+            list("#...."),
+            list("#...."),
+        ]
     )
     == "P"
 )
@@ -302,19 +368,37 @@ assert (
 # Неопределённые фигуры — X
 assert (
     detect_letter(
-        [list("....."), list("....."), list("..#.."), list("....."), list(".....")]
+        [
+            list("....."),
+            list("....."),
+            list("..#.."),
+            list("....."),
+            list("....."),
+        ]
     )
     == "I"
 )
 assert (
     detect_letter(
-        [list("#####"), list("#...#"), list("#.#.#"), list("#...#"), list("#####")]
+        [
+            list("#####"),
+            list("#...#"),
+            list("#.#.#"),
+            list("#...#"),
+            list("#####"),
+        ]
     )
     == "X"
 )
 assert (
     detect_letter(
-        [list("#...#"), list(".#.#."), list("..#.."), list(".#.#."), list("#...#")]
+        [
+            list("#...#"),
+            list(".#.#."),
+            list("..#.."),
+            list(".#.#."),
+            list("#...#"),
+        ]
     )
     == "X"
 )
