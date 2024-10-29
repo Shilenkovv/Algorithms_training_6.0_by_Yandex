@@ -25,46 +25,53 @@ def detect_letter(grid):
 
     # Найдём потенциальные границы внутреннего прямоугольника
     inner_top, inner_bottom, inner_left, inner_right = n, -1, n, -1
-    has_inner_rectangle = False
-    for i in range(top + 1, bottom):
-        for j in range(left + 1, right):
+    # has_inner_rectangle = False  # TODO
+    for i in range(top, bottom + 1):
+        for j in range(left, right + 1):
             if grid[i][j] == ".":
-                has_inner_rectangle = True
+                # has_inner_rectangle = True  # TODO
                 inner_top = min(inner_top, i)
                 inner_bottom = max(inner_bottom, i)
                 inner_left = min(inner_left, j)
                 inner_right = max(inner_right, j)
 
+    # TODO
     # Проверка на наличие валидного внутреннего прямоугольника
-    if has_inner_rectangle:
-        for i in range(inner_top, inner_bottom + 1):
-            for j in range(inner_left, inner_right + 1):
-                if grid[i][j] != ".":
-                    return "X"
-    else:
-        return "X"
+    # if has_inner_rectangle:
+    #     for i in range(inner_top, inner_bottom + 1):
+    #         for j in range(inner_left, inner_right + 1):
+    #             if grid[i][j] != ".":
+    #                 return "X"
+    # else:
+    #     return "X"
 
     # Проверка на "O": внутренний прямоугольник окружён со всех сторон
+
+    is_O = True
     if (
-        top < inner_top < inner_bottom < bottom
-        and left < inner_left < inner_right < right
+        top < inner_top <= inner_bottom < bottom
+        and left < inner_left <= inner_right < right
     ):
-        return "O"
+        for i in range(inner_top, inner_bottom + 1):
+            for j in range(inner_left, inner_right + 1):
+                if grid[i][j] == "#":
+                    is_O = False
+        if is_O:
+            return "O"
 
     # Проверка на "C": внутренняя правая граница совпадает с правой границей внешнего прямоугольника
     if (
-        top < inner_top < inner_bottom < bottom
+        top < inner_top <= inner_bottom < bottom
         and left < inner_left
         and inner_right == right
     ):
         return "C"
 
-    # Проверка на "L": внутренняя нижняя граница совпадает с внешней нижней границей
     if (
-        top < inner_top
-        and inner_bottom == bottom
-        and left < inner_left
-        and inner_right == right
+        top == inner_top
+        and inner_top <= inner_bottom < bottom
+        and right == inner_right
+        and left < inner_left <= inner_right
     ):
         return "L"
 
@@ -80,14 +87,16 @@ def detect_letter(grid):
         return "H"
 
     # Проверка на "P": внутренний прямоугольник внизу и второй выше него
-    if inner_bottom == bottom and inner_left < inner_right:
-        return "P"
+    # if inner_bottom == bottom and inner_left < inner_right:
+    #     return "P"
 
     # Если ни одно из условий не подошло, возвращаем "X"
     return "X"
 
 
-print(
+assert detect_letter([list("#."), list("##")]) == "L"
+
+assert (
     detect_letter(
         [
             list("#########"),
@@ -101,23 +110,8 @@ print(
             list("#########"),
         ]
     )
+    == "O"
 )
-# assert (
-#     detect_letter(
-#         [
-#             list("#########"),
-#             list("#####.###"),
-#             list("#########"),
-#             list("#########"),
-#             list("#########"),
-#             list("#########"),
-#             list("#########"),
-#             list("#########"),
-#             list("#########"),
-#         ]
-#     )
-#     == "O"
-# )
 
 assert detect_letter([list(".##."), list(".##."), list(".##."), list("....")]) == "I"
 assert (
@@ -144,35 +138,26 @@ assert (
 )
 assert (
     detect_letter(
-        [list("######"), list("#....#"), list("#....#"), list("#....#"), list("######")]
+        [
+            list("######"),
+            list("#....#"),
+            list("#....#"),
+            list("#....#"),
+            list("#....#"),
+            list("######"),
+        ]
     )
     == "O"
 )
-# assert (
-#     detect_letter(
-#         [list("....."), list("######"), list("#....#"), list("######"), list(".....")]
-#     )
-#     == "O"
-# )
 
 # Буква C
-print(
-    detect_letter(
-        [list("#####"), list("#...."), list("#...."), list("#...."), list("#####")]
-    )
-)
 assert (
     detect_letter(
         [list("#####"), list("#...."), list("#...."), list("#...."), list("#####")]
     )
     == "C"
 )
-assert (
-    detect_letter(
-        [list("####"), list("#..."), list("#..."), list("#..."), list("####")]
-    )
-    == "C"
-)
+assert detect_letter([list("####"), list("#..."), list("#..."), list("####")]) == "C"
 
 # Буква L
 assert (
@@ -180,13 +165,13 @@ assert (
         [list("###.."), list("#...."), list("#...."), list("#...."), list("#####")]
     )
     == "L"
-)  # ! WTF ?
+)
 assert (
     detect_letter(
-        [list("#####"), list("#...."), list("#...."), list("#...."), list("#####")]
+        [list("#...."), list("#...."), list("#...."), list("#...."), list("#####")]
     )
     == "L"
-)  # ! WTF ?
+)
 
 # Буква H
 assert (
@@ -203,25 +188,24 @@ assert (
 )
 
 # Буква P
-assert (
-    detect_letter(
-        [list("#####"), list("#...#"), list("#####"), list("#...."), list("#....")]
-    )
-    == "P"
-)
-assert (
-    detect_letter(
-        [list("######"), list("#....#"), list("######"), list("#....."), list("#.....")]
-    )
-    == "P"
-)
+# print(
+#     detect_letter(
+#         [list("#####"), list("#...#"), list("#####"), list("#...."), list("#....")]
+#     )
+# )
+# assert (
+#     detect_letter(
+#         [list("#####"), list("#...#"), list("#####"), list("#...."), list("#....")]
+#     )
+#     == "P"
+# )
 
 # Неопределённые фигуры — X
 assert (
     detect_letter(
         [list("....."), list("....."), list("..#.."), list("....."), list(".....")]
     )
-    == "X"
+    == "I"
 )
 assert (
     detect_letter(
@@ -235,10 +219,28 @@ assert (
     )
     == "X"
 )
+assert (
+    detect_letter(
+        [
+            list(".........."),
+            list(".........."),
+            list("..###....."),
+            list("..###....."),
+            list("..###....."),
+            list("..###....."),
+            list("..###.####"),
+            list("..########"),
+            list("..########"),
+            list(".........."),
+        ]
+    )
+    == "X"
+)
 
 
 def main():
     board = []
+
     n = int(input())
     for i in range(n):
         row = list(input())

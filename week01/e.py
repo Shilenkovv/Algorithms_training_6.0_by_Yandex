@@ -12,7 +12,7 @@ def max_mul(lst):
 
 
 with open(
-    "week01/e.txt",
+    "/week01/e.txt",
     "r",
 ) as f:
     n = int(f.readline())
