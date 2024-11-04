@@ -5,3 +5,4 @@ venv/
 *.ipynb
 temp.py
 .ruff_cache
+*test.txt
