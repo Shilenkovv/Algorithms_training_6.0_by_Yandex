@@ -1,19 +1,19 @@
 def clues(n, clues_list, m, k, clues_start):
     d = dict([(1, 1)])
-    l = curr_k = 0
-    r = 1
-    while r < n:
-        if clues_list[r] < clues_list[r - 1]:
-            l = r
+    left = curr_k = 0
+    right = 1
+    while right < n:
+        if clues_list[right] < clues_list[right - 1]:
+            left = right
             curr_k = 0
-        elif clues_list[r] == clues_list[r - 1]:
+        elif clues_list[right] == clues_list[right - 1]:
             curr_k += 1
             while curr_k > k:
-                if clues_list[l] == clues_list[l + 1]:
+                if clues_list[left] == clues_list[left + 1]:
                     curr_k -= 1
-                l += 1
-        d[r + 1] = l + 1
-        r += 1
+                left += 1
+        d[right + 1] = left + 1
+        right += 1
     ans = [d.get(clues_start[i]) for i in range(m)]
     return ans
 
