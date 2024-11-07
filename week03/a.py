@@ -1,16 +1,16 @@
 def brackets(seq: str) -> str:
-    deck = []
+    stack = []
     d = {"(": ")", "[": "]", "{": "}"}
     for c in seq:
         if c in d:
-            deck.append(c)
+            stack.append(c)
         else:
-            if deck:
-                if c == d.get(deck[-1]):
-                    deck.pop()
+            if stack:
+                if c == d.get(stack[-1]):
+                    stack.pop()
                     continue
             return "no"
-    if deck:
+    if stack:
         return "no"
     return "yes"
 
