@@ -1,132 +1,161 @@
-def rovers(n: int, d: dict, a: int, b: int) -> None:
-    # pass
-    ans = [0] * 100
+def rovers(n: int, d: dict, direction_load_d: dict, a: int, b: int) -> None:
+    ans = [0] * (n + 1)
     timing = 1
     passed = 0
     fp, sp = min(a, b), max(a, b)
     tp = min(filter(lambda x: x not in [a, b], [1, 2, 3, 4]))
-    lastp = max(filter(lambda x: x not in [a, b], [1, 2, 3, 4]))
+    lp = max(filter(lambda x: x not in [a, b], [1, 2, 3, 4]))
     straight_line = False
     if max(a, b) - min(a, b) == 2:
         straight_line = True
     elif min(a, b) == 1 and max(a, b) == 4:
         fp, sp = sp, fp
-    elif min(tp, lastp) == 1 and max(tp, lastp) == 4:
-        tp, lastp = lastp, tp
-
-    # frst_left = scnd_left = thrd_left = fourth_left = 0
-    while passed < n:  # TODO need to be corrected
-        if d[fp][0] != 0:
+    elif min(tp, lp) == 1 and max(tp, lp) == 4:
+        tp, lp = lp, tp
+    priorities = [fp, sp, tp, lp]
+    while passed < n:
+        if direction_load_d[fp] > 0 and d[fp][0] != 0:
             ans[d.get(fp)[0]] = timing
             d.get(fp).pop(0)
+            direction_load_d[fp] -= 1
             passed += 1
-            if d[sp][0] != 0 and straight_line:
+            if direction_load_d[sp] > 0 and d[sp][0] != 0 and straight_line:
                 ans[d.get(sp)[0]] = timing
                 d.get(sp).pop(0)
+                direction_load_d[sp] -= 1
                 passed += 1
+            elif direction_load_d[sp] > 0:
+                if d[sp][0] == 0:
+                    d.get(sp).pop(0)
+                elif (
+                    direction_load_d[sp] > 1
+                    and len(d.get(sp)) > direction_load_d[sp]
+                ):
+                    j = 1
+                    while d.get(sp)[j] != 0:
+                        j += 1
+                    d.get(sp).pop(j)
+            if direction_load_d[tp] > 0:
+                if d[tp][0] == 0:
+                    d.get(tp).pop(0)
+                elif (
+                    direction_load_d[tp] > 1
+                    and len(d.get(tp)) > direction_load_d[tp]
+                ):
+                    j = 1
+                    while d.get(tp)[j] != 0:
+                        j += 1
+                    d.get(tp).pop(j)
+            if direction_load_d[lp] > 0:
+                if d[lp][0] == 0:
+                    d.get(lp).pop(0)
+                elif (
+                    direction_load_d[lp] > 1
+                    and len(d.get(lp)) > direction_load_d[lp]
+                ):
+                    j = 1
+                    while d.get(lp)[j] != 0:
+                        j += 1
+                    d.get(lp).pop(j)
             timing += 1
-        elif d[sp][0] != 0:
+        elif direction_load_d[sp] > 0 and d[sp][0] != 0:
             ans[d.get(sp)[0]] = timing
-            d.get(fp).pop(0)
-            d.get(sp).pop(0)
             passed += 1
             timing += 1
-        elif d[tp][0] != 0:
-            if straight_line and d[lastp][0] != 0:
-                ans[d.get(lastp)[0]] = timing
-                d.get(lastp).pop(0)
+            for priority in priorities[:2]:
+                if direction_load_d[priority] > 0:
+                    d.get(priority).pop(0)
+            direction_load_d[sp] -= 1
+            if direction_load_d[tp] > 0:
+                if d[tp][0] == 0:
+                    d.get(tp).pop(0)
+                elif (
+                    direction_load_d[tp] > 1
+                    and len(d.get(tp)) > direction_load_d[tp]
+                ):
+                    j = 1
+                    while d.get(tp)[j] != 0:
+                        j += 1
+                    d.get(tp).pop(j)
+            if direction_load_d[lp] > 0:
+                if d[lp][0] == 0:
+                    d.get(lp).pop(0)
+                elif (
+                    direction_load_d[lp] > 1
+                    and len(d.get(lp)) > direction_load_d[lp]
+                ):
+                    j = 1
+                    while d.get(lp)[j] != 0:
+                        j += 1
+                    d.get(lp).pop(j)
+        elif direction_load_d[tp] > 0 and d[tp][0] != 0:
+            if straight_line and direction_load_d[lp] > 0 and d[lp][0] != 0:
+                ans[d.get(lp)[0]] = timing
+                d.get(lp).pop(0)
+                direction_load_d[lp] -= 1
+                passed += 1
+            elif direction_load_d[lp] > 0:
+                if d[lp][0] == 0:
+                    d.get(lp).pop(0)
+                elif (
+                    direction_load_d[lp] > 1
+                    and len(d.get(lp)) > direction_load_d[lp]
+                ):
+                    j = 1
+                    while d.get(lp)[j] != 0:
+                        j += 1
+                    d.get(lp).pop(j)
             ans[d.get(tp)[0]] = timing
-            d.get(fp).pop(0)
-            d.get(sp).pop(0)
-            d.get(tp).pop(0)
             passed += 1
             timing += 1
-        elif d[lastp][0] != 0:
-            ans[d.get(lastp)[0]] = timing
-            d.get(fp).pop(0)
-            d.get(sp).pop(0)
-            d.get(tp).pop(0)
-            d.get(lastp).pop(0)
+
+            for priority in priorities[:3]:
+                if direction_load_d[priority] > 0:
+                    d.get(priority).pop(0)
+            direction_load_d[tp] -= 1
+
+        elif direction_load_d[lp] > 0 and d[lp][0] != 0:
+            ans[d.get(lp)[0]] = timing
             passed += 1
             timing += 1
+            for priority in priorities:
+                if direction_load_d[priority] > 0:
+                    d.get(priority).pop(0)
+            direction_load_d[lp] -= 1
         else:
-            d.get(fp).pop(0)
-            d.get(sp).pop(0)
-            d.get(tp).pop(0)
-            d.get(lastp).pop(0)
+            for priority in priorities:
+                if direction_load_d[priority] > 0:
+                    d.get(priority).pop(0)
             timing += 1
-    printed = i = 0
-    while printed < passed:
-        if ans[i] != 0:
-            print(ans[i])
-            printed += 1
-        i += 1
+    for elem in filter(lambda x: x != 0, ans):
+        print(elem)
 
 
-asserts = 3
+asserts = False
 
 
 def main():
+    direction_load_d = {x: 0 for x in range(1, 5)}
     if asserts:
         with open("./week03/i_test.txt", "r") as f:
-            for _ in range(asserts):
-                n = int(f.readline())
-                d = {x: [0] * 200 for x in range(1, 5)}
-                a, b = map(int, f.readline().split())
-                for i in range(1, n + 1):
-                    direction, arrival_time = map(int, f.readline().split())
-                    d[direction][arrival_time - 1] = i
-                rovers(n, d, a, b)
+            n = int(f.readline())
+            d = {x: [0] * 200 for x in range(1, 5)}
+            a, b = map(int, f.readline().split())
+            for i in range(1, n + 1):
+                direction, arrival_time = map(int, f.readline().split())
+                d[direction][arrival_time - 1] = i
+                direction_load_d[direction] += 1
+    else:
+        n = int(input())
+        d = {x: [0] * 200 for x in range(1, 5)}
+        a, b = map(int, input().strip().split())
+        for i in range(1, n + 1):
+            direction, arrival_time = map(int, input().strip().split())
+            d[direction][arrival_time - 1] = i
+            direction_load_d[direction] += 1
 
-    # n = int(input())
-    # rovers(n)
+    rovers(n, d, direction_load_d, a, b)
 
 
 if __name__ == "__main__":
     main()
-
-# Склад представляет собой набор одинаковых квадратов, вокруг которых расположены проезды.
-# В углах каждого из квадратов расположены перекрестки,
-# образованные из пересекающихся под прямым углом проездов.
-
-# По складу движутся роверы и при проезде перекрестков они руководствуются следующими правилами:
-
-# На перекрестке неравнозначных дорог ровер, движущийся по второстепенной дороге,
-# должен уступить дорогу роверу, приближающимся по главной.
-
-# Если главная дорога на перекрестке меняет направление,
-# роверы, движущиеся по главной дороге, должны руководствоваться между собой правилами
-# проезда перекрестков равнозначных дорог.
-
-# На перекрестке равнозначных дорог ровер обязан уступить дорогу транспортным средствам,
-# приближающимся справа.
-
-# Для тестирования был выбран перекресток,
-# для которого необходимо определить в каком порядке его проедут N
-# роверов, подъезжающих к перекрестку с каждой из четырех сторон в заданные моменты времени.
-# Стороны обозначены номерами 1, 2, 3 и 4, если перечислять по часовой стрелке.
-# Известно, что за единицу времени с каждой из сторон перекрестка приезжает
-# не более одного ровера, а все роверы соблюдают правила и не обгоняют друг-друга.
-# Поскольку это только начало тестирования, все роверы хотят проехать перекресток прямо.
-# Роверы, приближающиеся со сторон a и b находятся на главной дороге,
-# остальные — на второстепенной. На проезд перекрестка ровер тратит одну единицу времени.
-
-# Таким образом, ровер проезжает перекресток только если:
-
-# нет роверов, которые находятся перед этим ровером в очереди к перекрестку,
-# нет роверов, которым нужно уступить дорогу
-# Если два ровера, стоящие первыми в очереди на проезд
-# перекрестка не должны уступать друг другу дорогу, то они проедут перекресток одновременно.
-
-# Определите, в каком порядке роверы проедут перекресток.
-
-# Первая строка входного файла содержит одно целое число N (1≤N≤100) — количество роверов.
-# Вторая строка содержит числа a и b — стороны перекрестка, составляющие главную дорогу (1≤a,b≤4, a≠b).
-
-# Каждая из следующих N строк содержит описание ровера, состоящее из двух целых чисел
-# di и ti (1≤di≤4, 1≤ti≤100) — направление и время приезда i-ого ровера.
-
-# Формат вывода
-# В выходной файл выведите N целых чисел по одному на строке. i-ая строка должна содержать время, в которое i-ый ровер проедет перекресток.
-
-# Роверы занумерованы в порядке появления во входном файле.
