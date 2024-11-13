@@ -6,4 +6,4 @@ venv/
 temp.py
 .ruff_cache
 *test.txt
-part*
+*_tests.txt
