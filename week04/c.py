@@ -1,3 +1,8 @@
+import sys
+
+sys.setrecursionlimit(100000)
+
+
 def build_tree(tree: list, node: str, childrens: dict, debug=True):
     if not tree:
         tree = [node, []]
@@ -18,19 +23,23 @@ def build_tree(tree: list, node: str, childrens: dict, debug=True):
     return tree
 
 
-def count_childs(d: dict, tree: list) -> int:
-    node = tree[0]
-    if len(tree) == 1 or not any(tree[1:]):
-        d[node] = 0
-        return 0
+def LCA(tree: list, person_a: str, person_b: str) -> str:
+    if not tree:
+        return None
 
-    total_descendants = 0
+    if tree[0] == person_a or tree[0] == person_b:
+        return tree[0]
+
+    ancestors = []
     for child in tree[1:]:
-        if child:
-            total_descendants += 1 + count_childs(d, child)
+        ancestor = LCA(child, person_a, person_b)
+        if ancestor:
+            ancestors.append(ancestor)
 
-    d[node] = total_descendants
-    return total_descendants
+    if len(ancestors) == 2:
+        return tree[0]
+
+    return ancestors[0] if ancestors else None
 
 
 asserts = False
@@ -38,18 +47,15 @@ debug = False
 
 
 def main():
-    import sys
-
-    sys.setrecursionlimit(100000)
-
     if asserts:
-        DIR = "./b_test.txt"
+        FILENAME = "c_test.txt"
+        DIR = "./" + FILENAME
         if debug:
             import os
 
             cwd = os.getcwd()
             if cwd[-2:] != "04":
-                DIR = "./week04/b_test.txt"
+                DIR = "./week04/" + FILENAME
         with open(DIR, "r") as f:
             data = [f.readline().strip() for _ in range(int(f.readline()) - 1)]
     else:
@@ -69,10 +75,27 @@ def main():
         print(f"greatfather = {fathers.difference(sons)}")
         print(childrens)
     tree = build_tree(tree, start, childrens, debug)
-    d = {}
-    count_childs(d, tree)
-    for key in sorted(d):
-        print(f"{key} {d.get(key)}")
+    if asserts:
+        with open(DIR, "r") as f:
+            for _ in range(int(f.readline()) - 1):
+                f.readline()
+            for _ in range(1000000):
+                try:
+                    person_a, person_b = f.readline().strip().split()
+                    print(LCA(tree, person_a, person_b))
+                except Exception as e:
+                    if debug:
+                        print(e)
+                    break
+    else:
+        for _ in range(1000000):
+            try:
+                person_a, person_b = input().split()
+                print(LCA(tree, person_a, person_b))
+            except Exception as e:
+                if debug:
+                    print(e)
+                break
 
 
 if __name__ == "__main__":
