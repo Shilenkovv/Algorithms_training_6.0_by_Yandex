@@ -7,3 +7,6 @@ temp.py
 .ruff_cache
 *test.txt
 *_tests.txt
+*_old.py
+test.py
+*_backup*
