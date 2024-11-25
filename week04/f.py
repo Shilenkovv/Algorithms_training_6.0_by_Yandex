@@ -35,8 +35,8 @@ def money(n: int, managers: list):
     return coins[1:]
 
 
-asserts = False
-debug_mode = False
+asserts = True
+debug_mode = True
 N_TESTS = 12
 
 
